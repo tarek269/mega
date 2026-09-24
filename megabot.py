@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-🔥 WINGO 1M - 19 UNIQUE HACKS MEGA FUSION BOT
-🎯 19 Different Hack Algorithms
-🗳️ Majority Vote → Prediction
-📊 Hourly Report
-📡 MODE: 1 MIN WINGO
+🔥 WINGO 1M MEGA FUSION - 44 HACKS MAJORITY VOTE BOT
+🧠 Free Render Compatible
 """
 
 import asyncio
@@ -33,8 +30,14 @@ API_URL = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json
 class DummyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
+        self.send_header('Content-Type', 'text/plain')
         self.end_headers()
-        self.wfile.write(b"19 HACKS MEGA FUSION BOT is running!")
+        self.wfile.write(b"44 HACKS MEGA FUSION BOT is running!")
+    
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+    
     def log_message(self, format, *args):
         pass
 
@@ -76,17 +79,14 @@ last_result_sent = False
 last_hour_report_time = time.time()
 
 # ============================================================
-# 🎯 19 UNIQUE HACK ALGORITHMS
+# 🎯 44 HACK ALGORITHMS
 # ============================================================
 
-# 1. Crack By Kohli Mods
 def h_kohli(h):
     if len(h) < 3: return 'BIG'
-    l2 = h[:2]
-    if l2[0] == l2[1]: return 'SMALL' if l2[0] == 'BIG' else 'BIG'
-    return l2[0]
+    if h[0] == h[1]: return 'SMALL' if h[0] == 'BIG' else 'BIG'
+    return h[0]
 
-# 2. HACK KA BOSS - Gold Break
 def h_hackboss(h):
     if len(h) < 10: return 'BIG'
     big = h[:10].count('BIG')
@@ -94,7 +94,6 @@ def h_hackboss(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 5 else 'SMALL'
 
-# 3. SHIKAARI BOSS
 def h_shikaari(h, last_num):
     if last_num is None: return 'BIG'
     if len(h) >= 2 and h[0] == h[1]:
@@ -104,7 +103,6 @@ def h_shikaari(h, last_num):
     if r < 0: r = 9
     return 'BIG' if r >= 5 else 'SMALL'
 
-# 4. WINGO INFINITY AI
 def h_infinity(h):
     if len(h) < 5: return 'BIG'
     big = h[:5].count('BIG')
@@ -115,7 +113,6 @@ def h_infinity(h):
     if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return 'BIG' if big >= 3 else 'SMALL'
 
-# 5. PRIYANSHU PVT MOD
 def h_priyanshu(h):
     if len(h) < 4: return 'BIG'
     l4 = h[:4]
@@ -128,7 +125,6 @@ def h_priyanshu(h):
     if l4[0] == l4[1] and l4[2] == l4[3]: return 'SMALL' if l4[0] == 'BIG' else 'BIG'
     return 'BIG' if l4.count('BIG') >= 2 else 'SMALL'
 
-# 6. SANJU BHAI AI
 def h_sanju(h):
     if len(h) < 10: return 'BIG'
     big = h[:10].count('BIG')
@@ -136,7 +132,6 @@ def h_sanju(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 5 else 'SMALL'
 
-# 7. MADMAX X PRO V6
 def h_madmax(h):
     if len(h) < 5: return 'BIG'
     big = h[:5].count('BIG')
@@ -147,7 +142,6 @@ def h_madmax(h):
     if streak >= 3: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return 'BIG' if big >= 3 else 'SMALL'
 
-# 8. CYBER PRO MAX
 def h_cyber(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
@@ -155,12 +149,10 @@ def h_cyber(h):
     if big <= 1: return 'BIG'
     return h[0]
 
-# 9. ANSH BHAI AI
 def h_ansh(h):
     if len(h) < 5: return 'BIG'
     return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# 10. ANSH 2 LEVEL AI v6
 def h_ansh2(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
@@ -168,7 +160,6 @@ def h_ansh2(h):
     if big <= 1: return 'BIG'
     return h[0]
 
-# 11. ANSH PRO BEAST
 def h_beast(h):
     if len(h) < 6: return 'BIG'
     score = 0
@@ -181,18 +172,10 @@ def h_beast(h):
     if streak >= 4: score = -score
     return 'BIG' if score >= 0 else 'SMALL'
 
-# 12. PANDA PREDICTOR
 def h_panda(h):
     if len(h) < 5: return 'BIG'
-    big = h[:5].count('BIG')
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return 'BIG' if big >= 3 else 'SMALL'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# 13. FLEXI V8
 def h_flexi(h):
     if len(h) < 8: return 'BIG'
     big = h[:8].count('BIG')
@@ -200,18 +183,10 @@ def h_flexi(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 4 else 'SMALL'
 
-# 14. REXAA ULTRA VIP
 def h_rexaa(h):
     if len(h) < 5: return 'BIG'
-    big = h[:5].count('BIG')
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return 'BIG' if big >= 3 else 'SMALL'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# 15. YADAV NOVIX V1
 def h_yadav(h):
     if len(h) < 6: return 'BIG'
     big = h[:6].count('BIG')
@@ -222,7 +197,6 @@ def h_yadav(h):
     if streak >= 3: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return 'BIG' if big >= 3 else 'SMALL'
 
-# 16. FUN BY REAL
 def h_funreal(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
@@ -230,15 +204,10 @@ def h_funreal(h):
     if big <= 1: return 'BIG'
     return h[0]
 
-# 17. FreeWorking
 def h_freeworking(h):
-    if len(h) < 10: return 'BIG'
-    big = h[:10].count('BIG')
-    if big >= 8: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 5 else 'SMALL'
+    if len(h) < 6: return 'BIG'
+    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
 
-# 18. BABY
 def h_baby(h):
     if len(h) < 10: return 'BIG'
     big = h[:10].count('BIG')
@@ -246,13 +215,128 @@ def h_baby(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 5 else 'SMALL'
 
-# 19. RAMU BOSS V2
-def h_ramu(h):
+def h_8logic_1(h):
+    if len(h) < 3: return 'BIG'
+    return 'SMALL' if h[0] == h[1] and h[0] == 'BIG' else ('BIG' if h[0] == h[1] else h[0])
+
+def h_8logic_2(h):
+    if len(h) < 6: return 'BIG'
+    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
+
+def h_8logic_3(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_beast2(h):
+    if len(h) < 6: return 'BIG'
+    score = sum((1 if x == 'BIG' else -1) * (6 - i) for i, x in enumerate(h[:6]))
+    return 'BIG' if score >= 0 else 'SMALL'
+
+def h_2level_1(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_2level_2(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
-    return 'BIG' if big >= 2 else 'SMALL'
+    if big >= 3: return 'SMALL'
+    if big <= 1: return 'BIG'
+    return h[0]
 
-# All 19 Hacks
+def h_2level_3(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_2number(h):
+    if len(h) < 4: return 'BIG'
+    return 'BIG' if h[:4].count('BIG') >= 2 else 'SMALL'
+
+def h_30engine_1(h):
+    if len(h) < 5: return 'BIG'
+    big = h[:5].count('BIG')
+    streak = 1
+    for i in range(1, len(h)):
+        if h[i] == h[0]: streak += 1
+        else: break
+    if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
+    return 'BIG' if big >= 3 else 'SMALL'
+
+def h_vip4k(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') > 2 else 'SMALL'
+
+def h_vipengine(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_aipredictor(h):
+    if len(h) < 6: return 'BIG'
+    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
+
+def h_vipengine2(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_bossv2(h):
+    if len(h) < 5: return 'BIG'
+    return h[0]
+
+def h_vip(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') > 2 else 'SMALL'
+
+def h_goldbreak(h):
+    if len(h) < 10: return 'BIG'
+    big = h[:10].count('BIG')
+    if big >= 8: return 'SMALL'
+    if big <= 2: return 'BIG'
+    return 'BIG' if big > 5 else 'SMALL'
+
+def h_boss_shikaari(h, last_num):
+    if last_num is None: return 'BIG'
+    r = last_num - 1
+    if r < 0: r = 9
+    return 'BIG' if r >= 5 else 'SMALL'
+
+def h_30engine_2(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_8logic_4(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_pattern_db(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_neural(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_tri_engine(h):
+    if len(h) < 6: return 'BIG'
+    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
+
+def h_8logic_5(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_flexi2(h):
+    if len(h) < 8: return 'BIG'
+    big = h[:8].count('BIG')
+    if big >= 6: return 'SMALL'
+    if big <= 2: return 'BIG'
+    return 'BIG' if big > 4 else 'SMALL'
+
+def h_panda2(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
+def h_30s_neural(h):
+    if len(h) < 5: return 'BIG'
+    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
+
 HACKS = [
     ("Kohli Mods", lambda h, n: h_kohli(h)),
     ("Hack Ka Boss", lambda h, n: h_hackboss(h)),
@@ -272,11 +356,36 @@ HACKS = [
     ("Fun By Real", lambda h, n: h_funreal(h)),
     ("FreeWorking", lambda h, n: h_freeworking(h)),
     ("Baby Pattern", lambda h, n: h_baby(h)),
-    ("RAMU Boss V2", lambda h, n: h_ramu(h))
+    ("5_616795596", lambda h, n: h_8logic_1(h)),
+    ("5_616795949", lambda h, n: h_8logic_2(h)),
+    ("5_616147768", lambda h, n: h_8logic_3(h)),
+    ("5_616584934", lambda h, n: h_beast2(h)),
+    ("5_616596531_1", lambda h, n: h_2level_1(h)),
+    ("5_616596531_2", lambda h, n: h_2level_2(h)),
+    ("5_616596531_3", lambda h, n: h_2level_3(h)),
+    ("5_616596531_4", lambda h, n: h_2number(h)),
+    ("5_617046570", lambda h, n: h_30engine_1(h)),
+    ("5_617049367_1", lambda h, n: h_vip4k(h)),
+    ("5_617049367_2", lambda h, n: h_vipengine(h)),
+    ("5_617049367_3", lambda h, n: h_aipredictor(h)),
+    ("5_617049367_4", lambda h, n: h_vipengine2(h)),
+    ("5_617274547", lambda h, n: h_bossv2(h)),
+    ("5_617274547_2", lambda h, n: h_vip(h)),
+    ("5_617274547_3", lambda h, n: h_goldbreak(h)),
+    ("Boss Shikaari", lambda h, n: h_boss_shikaari(h, n)),
+    ("Index 30+", lambda h, n: h_30engine_2(h)),
+    ("Index 8Logic", lambda h, n: h_8logic_4(h)),
+    ("Done Pattern", lambda h, n: h_pattern_db(h)),
+    ("FunRealX Neural", lambda h, n: h_neural(h)),
+    ("5_615435363", lambda h, n: h_tri_engine(h)),
+    ("5_616143778", lambda h, n: h_8logic_5(h)),
+    ("5_616802506", lambda h, n: h_flexi2(h)),
+    ("5_613664684", lambda h, n: h_panda2(h)),
+    ("5_614753297", lambda h, n: h_30s_neural(h))
 ]
 
 # ============================================================
-# 🗳️ MAJORITY VOTE ENGINE
+# 🗳️ 44 HACKS MAJORITY VOTE
 # ============================================================
 def mega_fusion_engine(history_sides, last_num):
     predictions = []
@@ -292,10 +401,8 @@ def mega_fusion_engine(history_sides, last_num):
     
     if big_votes > small_votes:
         final = 'BIG'
-    elif small_votes > big_votes:
-        final = 'SMALL'
     else:
-        final = predictions[0]
+        final = 'SMALL'
     
     confidence = int((max(big_votes, small_votes) / len(predictions)) * 100)
     
@@ -310,8 +417,7 @@ def mega_fusion_engine(history_sides, last_num):
         'confidence': confidence,
         'big_votes': big_votes,
         'small_votes': small_votes,
-        'total_votes': len(predictions),
-        'predictions': predictions
+        'total_votes': len(predictions)
     }
 
 # ==================== API ====================
@@ -355,7 +461,7 @@ async def send_hourly_report():
     total_win_rate = (total_wins / total_rounds * 100) if total_rounds > 0 else 0
 
     report_msg = (
-        f"📊 *HOURLY REPORT - 19 HACKS (1M)*\n"
+        f"📊 *HOURLY REPORT - 44 HACKS (1M)*\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"🕐 *TIME:* {datetime.now().strftime('%I:%M %p')}\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -374,7 +480,7 @@ async def send_hourly_report():
         f"🔥 *BEST WIN STREAK:* `{best_win_streak}x`\n"
         f"📉 *WORST LOSS STREAK:* `{worst_loss_streak}x`\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"⚡ 19 HACKS MEGA FUSION"
+        f"⚡ 44 HACKS MEGA FUSION"
     )
 
     await send_message(report_msg)
@@ -400,7 +506,7 @@ async def prediction_bot():
     global prediction_sent_for_period, last_result_sent
     global last_hour_report_time
 
-    print("🔥 19 HACKS MEGA FUSION BOT STARTED...")
+    print("🔥 44 HACKS MEGA FUSION BOT STARTED...")
     print(f"📡 Total Hacks: {len(HACKS)}")
     print("🗳️ MAJORITY VOTE SYSTEM")
     print("📊 HOURLY REPORT: ENABLED")
@@ -512,7 +618,7 @@ async def prediction_bot():
                     f"💎 JACKPOTS: `{total_jackpots}`\n"
                     f"{streak_emoji} STREAK: `{current_streak:+d}`\n"
                     f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"⚡ 19 HACKS MEGA FUSION"
+                    f"⚡ 44 HACKS MEGA FUSION"
                 )
 
                 await send_message(result_msg)
@@ -536,7 +642,7 @@ async def prediction_bot():
                 vote_summary = f"BIG: `{pred['big_votes']}` | SMALL: `{pred['small_votes']}`"
 
                 prediction_msg = (
-                    f"🔥 *19 HACKS MEGA FUSION* 🔥\n"
+                    f"🔥 *44 HACKS MEGA FUSION* 🔥\n"
                     f"━━━━━━━━━━━━━━━━━━━━\n"
                     f"🆔 PERIOD: `#{next_period[-5:]}`\n"
                     f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -552,7 +658,7 @@ async def prediction_bot():
                     f"📈 WIN RATE: `{(total_wins/total_rounds*100) if total_rounds > 0 else 0:.1f}%`\n"
                     f"━━━━━━━━━━━━━━━━━━━━\n"
                     f"⏳ RESULT AWAITING...\n"
-                    f"⚡ 19 HACKS MEGA FUSION"
+                    f"⚡ 44 HACKS MEGA FUSION"
                 )
 
                 last_predicted_period = next_period
@@ -574,15 +680,14 @@ async def prediction_bot():
 
 # ==================== স্টার্ট ====================
 if __name__ == '__main__':
-    print("🔥 19 HACKS MEGA FUSION BOT")
+    print("🔥 44 HACKS MEGA FUSION BOT")
     print("━━━━━━━━━━━━━━━━━━━━")
     print(f"📡 TOTAL HACKS: {len(HACKS)}")
     print("🗳️ MAJORITY VOTE SYSTEM")
     print("📊 HOURLY REPORT: ENABLED")
     print("📡 MODE: 1 MIN WINGO")
     print("━━━━━━━━━━━━━━━━━━━━")
-    print(f"🤖 BOT: @rakiiibahmed")
-
+    
     try:
         asyncio.run(prediction_bot())
     except KeyboardInterrupt:
