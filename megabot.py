@@ -2,53 +2,58 @@
 # -*- coding: utf-8 -*-
 
 """
-🔥 WINGO 1M MEGA FUSION - 44 HACKS MAJORITY VOTE BOT
-🧠 Free Render Compatible
+🔥 SHIKAARI BOSS - 5 MIN WINGO TELEGRAM BOT
+🧠 Algorithm: Last-1 (Normal) + 11-Last (Repeat)
+📊 WIN/LOSS/JACKPOT Tracking
+🤖 Telegram Bot
 """
 
 import asyncio
 import time
 import requests
 import os
-import random
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 
 try:
     from telegram import Bot
+    from telegram.error import TelegramError, TimedOut, NetworkError
 except ImportError:
-    print("❌ python-telegram-bot not installed!")
+    print("❌ python-telegram-bot not installed! Run: pip install python-telegram-bot")
     exit(1)
 
 # ==================== কনফিগ ====================
 BOT_TOKEN = "8386058038:AAEwayH-C4AUr7L_tx6Ecz__xpIXnrekJw0"
 CHAT_ID = "5012028880"
-API_URL = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json"
+
+# ✅ 5 MIN WINGO API
+API_URL = "https://draw.ar-lottery01.com/WinGo/WinGo_5M/GetHistoryIssuePage.json"
 
 # ==================== ওয়েব সার্ভার ====================
 class DummyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header('Content-Type', 'text/plain')
         self.end_headers()
-        self.wfile.write(b"44 HACKS MEGA FUSION BOT is running!")
-    
-    def do_HEAD(self):
-        self.send_response(200)
-        self.end_headers()
-    
-    def log_message(self, format, *args):
-        pass
+        self.wfile.write(b"SHIKAARI BOSS BOT is running!")
 
 def run_dummy_server():
     port = int(os.environ.get("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), DummyServer)
-    print(f"🌐 Web Server started on port {port}")
     server.serve_forever()
 
-server_thread = threading.Thread(target=run_dummy_server, daemon=True)
-server_thread.start()
+threading.Thread(target=run_dummy_server, daemon=True).start()
+
+def keep_alive():
+    while True:
+        try:
+            time.sleep(600)
+            port = int(os.environ.get("PORT", 8080))
+            requests.get(f"http://localhost:{port}/", timeout=5)
+        except:
+            pass
+
+threading.Thread(target=keep_alive, daemon=True).start()
 
 # ==================== বট ====================
 bot = Bot(token=BOT_TOKEN)
@@ -67,368 +72,54 @@ hourly_losses = 0
 hourly_rounds = 0
 hourly_best_win_streak = 0
 hourly_worst_loss_streak = 0
-hourly_current_streak = 0
-hourly_current_streak_type = "WIN"
-hourly_jackpots = 0
 
 last_predicted_period = None
 last_predicted_signal = None
 last_predicted_num = None
 prediction_sent_for_period = {}
 last_result_sent = False
-last_hour_report_time = time.time()
 
 # ============================================================
-# 🎯 44 HACK ALGORITHMS
+# 🧠 SHIKAARI BOSS অ্যালগরিদম
 # ============================================================
 
-def h_kohli(h):
-    if len(h) < 3: return 'BIG'
-    if h[0] == h[1]: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return h[0]
-
-def h_hackboss(h):
-    if len(h) < 10: return 'BIG'
-    big = h[:10].count('BIG')
-    if big >= 8: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 5 else 'SMALL'
-
-def h_shikaari(h, last_num):
-    if last_num is None: return 'BIG'
-    if len(h) >= 2 and h[0] == h[1]:
-        r = 11 - last_num
-        return 'BIG' if r >= 5 else 'SMALL'
-    r = last_num - 1
-    if r < 0: r = 9
-    return 'BIG' if r >= 5 else 'SMALL'
-
-def h_infinity(h):
-    if len(h) < 5: return 'BIG'
-    big = h[:5].count('BIG')
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return 'BIG' if big >= 3 else 'SMALL'
-
-def h_priyanshu(h):
-    if len(h) < 4: return 'BIG'
-    l4 = h[:4]
-    streak = 1
-    for i in range(1, 4):
-        if l4[i] == l4[0]: streak += 1
-        else: break
-    if streak >= 4: return 'SMALL' if l4[0] == 'BIG' else 'BIG'
-    if l4[0] != l4[1] and l4[1] != l4[2]: return 'SMALL' if l4[0] == 'BIG' else 'BIG'
-    if l4[0] == l4[1] and l4[2] == l4[3]: return 'SMALL' if l4[0] == 'BIG' else 'BIG'
-    return 'BIG' if l4.count('BIG') >= 2 else 'SMALL'
-
-def h_sanju(h):
-    if len(h) < 10: return 'BIG'
-    big = h[:10].count('BIG')
-    if big >= 8: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 5 else 'SMALL'
-
-def h_madmax(h):
-    if len(h) < 5: return 'BIG'
-    big = h[:5].count('BIG')
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 3: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return 'BIG' if big >= 3 else 'SMALL'
-
-def h_cyber(h):
-    if len(h) < 4: return 'BIG'
-    big = h[:4].count('BIG')
-    if big >= 3: return 'SMALL'
-    if big <= 1: return 'BIG'
-    return h[0]
-
-def h_ansh(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_ansh2(h):
-    if len(h) < 4: return 'BIG'
-    big = h[:4].count('BIG')
-    if big >= 3: return 'SMALL'
-    if big <= 1: return 'BIG'
-    return h[0]
-
-def h_beast(h):
-    if len(h) < 6: return 'BIG'
-    score = 0
-    for i, x in enumerate(h[:6]):
-        score += (1 if x == 'BIG' else -1) * (6 - i)
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 4: score = -score
-    return 'BIG' if score >= 0 else 'SMALL'
-
-def h_panda(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_flexi(h):
-    if len(h) < 8: return 'BIG'
-    big = h[:8].count('BIG')
-    if big >= 6: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 4 else 'SMALL'
-
-def h_rexaa(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_yadav(h):
-    if len(h) < 6: return 'BIG'
-    big = h[:6].count('BIG')
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 3: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return 'BIG' if big >= 3 else 'SMALL'
-
-def h_funreal(h):
-    if len(h) < 4: return 'BIG'
-    big = h[:4].count('BIG')
-    if big >= 3: return 'SMALL'
-    if big <= 1: return 'BIG'
-    return h[0]
-
-def h_freeworking(h):
-    if len(h) < 6: return 'BIG'
-    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
-
-def h_baby(h):
-    if len(h) < 10: return 'BIG'
-    big = h[:10].count('BIG')
-    if big >= 8: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 5 else 'SMALL'
-
-def h_8logic_1(h):
-    if len(h) < 3: return 'BIG'
-    return 'SMALL' if h[0] == h[1] and h[0] == 'BIG' else ('BIG' if h[0] == h[1] else h[0])
-
-def h_8logic_2(h):
-    if len(h) < 6: return 'BIG'
-    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
-
-def h_8logic_3(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_beast2(h):
-    if len(h) < 6: return 'BIG'
-    score = sum((1 if x == 'BIG' else -1) * (6 - i) for i, x in enumerate(h[:6]))
-    return 'BIG' if score >= 0 else 'SMALL'
-
-def h_2level_1(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_2level_2(h):
-    if len(h) < 4: return 'BIG'
-    big = h[:4].count('BIG')
-    if big >= 3: return 'SMALL'
-    if big <= 1: return 'BIG'
-    return h[0]
-
-def h_2level_3(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_2number(h):
-    if len(h) < 4: return 'BIG'
-    return 'BIG' if h[:4].count('BIG') >= 2 else 'SMALL'
-
-def h_30engine_1(h):
-    if len(h) < 5: return 'BIG'
-    big = h[:5].count('BIG')
-    streak = 1
-    for i in range(1, len(h)):
-        if h[i] == h[0]: streak += 1
-        else: break
-    if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
-    return 'BIG' if big >= 3 else 'SMALL'
-
-def h_vip4k(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') > 2 else 'SMALL'
-
-def h_vipengine(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_aipredictor(h):
-    if len(h) < 6: return 'BIG'
-    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
-
-def h_vipengine2(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_bossv2(h):
-    if len(h) < 5: return 'BIG'
-    return h[0]
-
-def h_vip(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') > 2 else 'SMALL'
-
-def h_goldbreak(h):
-    if len(h) < 10: return 'BIG'
-    big = h[:10].count('BIG')
-    if big >= 8: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 5 else 'SMALL'
-
-def h_boss_shikaari(h, last_num):
-    if last_num is None: return 'BIG'
-    r = last_num - 1
-    if r < 0: r = 9
-    return 'BIG' if r >= 5 else 'SMALL'
-
-def h_30engine_2(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_8logic_4(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_pattern_db(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_neural(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_tri_engine(h):
-    if len(h) < 6: return 'BIG'
-    return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
-
-def h_8logic_5(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_flexi2(h):
-    if len(h) < 8: return 'BIG'
-    big = h[:8].count('BIG')
-    if big >= 6: return 'SMALL'
-    if big <= 2: return 'BIG'
-    return 'BIG' if big > 4 else 'SMALL'
-
-def h_panda2(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-def h_30s_neural(h):
-    if len(h) < 5: return 'BIG'
-    return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
-
-HACKS = [
-    ("Kohli Mods", lambda h, n: h_kohli(h)),
-    ("Hack Ka Boss", lambda h, n: h_hackboss(h)),
-    ("Shikaari Boss", lambda h, n: h_shikaari(h, n)),
-    ("Infinity AI", lambda h, n: h_infinity(h)),
-    ("Priyanshu", lambda h, n: h_priyanshu(h)),
-    ("Sanju Bhai", lambda h, n: h_sanju(h)),
-    ("Madmax X", lambda h, n: h_madmax(h)),
-    ("Cyber Pro", lambda h, n: h_cyber(h)),
-    ("Ansh Bhai", lambda h, n: h_ansh(h)),
-    ("Ansh 2Level", lambda h, n: h_ansh2(h)),
-    ("Ansh Beast", lambda h, n: h_beast(h)),
-    ("Panda Predictor", lambda h, n: h_panda(h)),
-    ("Flexi V8", lambda h, n: h_flexi(h)),
-    ("Rexaa Ultra", lambda h, n: h_rexaa(h)),
-    ("Yadav Novix", lambda h, n: h_yadav(h)),
-    ("Fun By Real", lambda h, n: h_funreal(h)),
-    ("FreeWorking", lambda h, n: h_freeworking(h)),
-    ("Baby Pattern", lambda h, n: h_baby(h)),
-    ("5_616795596", lambda h, n: h_8logic_1(h)),
-    ("5_616795949", lambda h, n: h_8logic_2(h)),
-    ("5_616147768", lambda h, n: h_8logic_3(h)),
-    ("5_616584934", lambda h, n: h_beast2(h)),
-    ("5_616596531_1", lambda h, n: h_2level_1(h)),
-    ("5_616596531_2", lambda h, n: h_2level_2(h)),
-    ("5_616596531_3", lambda h, n: h_2level_3(h)),
-    ("5_616596531_4", lambda h, n: h_2number(h)),
-    ("5_617046570", lambda h, n: h_30engine_1(h)),
-    ("5_617049367_1", lambda h, n: h_vip4k(h)),
-    ("5_617049367_2", lambda h, n: h_vipengine(h)),
-    ("5_617049367_3", lambda h, n: h_aipredictor(h)),
-    ("5_617049367_4", lambda h, n: h_vipengine2(h)),
-    ("5_617274547", lambda h, n: h_bossv2(h)),
-    ("5_617274547_2", lambda h, n: h_vip(h)),
-    ("5_617274547_3", lambda h, n: h_goldbreak(h)),
-    ("Boss Shikaari", lambda h, n: h_boss_shikaari(h, n)),
-    ("Index 30+", lambda h, n: h_30engine_2(h)),
-    ("Index 8Logic", lambda h, n: h_8logic_4(h)),
-    ("Done Pattern", lambda h, n: h_pattern_db(h)),
-    ("FunRealX Neural", lambda h, n: h_neural(h)),
-    ("5_615435363", lambda h, n: h_tri_engine(h)),
-    ("5_616143778", lambda h, n: h_8logic_5(h)),
-    ("5_616802506", lambda h, n: h_flexi2(h)),
-    ("5_613664684", lambda h, n: h_panda2(h)),
-    ("5_614753297", lambda h, n: h_30s_neural(h))
-]
-
-# ============================================================
-# 🗳️ 44 HACKS MAJORITY VOTE
-# ============================================================
-def mega_fusion_engine(history_sides, last_num):
-    predictions = []
-    for name, fn in HACKS:
-        try:
-            p = fn(history_sides, last_num)
-            predictions.append(p)
-        except Exception as e:
-            predictions.append('BIG')
+def shikaari_boss_algorithm(history_numbers):
+    """
+    NORMAL RULE: Last Number − 1
+    REPEAT RULE: যদি শেষ ২টি একই হয় → 11 − Last Number
+    """
+    if len(history_numbers) < 2:
+        return None
     
-    big_votes = predictions.count('BIG')
-    small_votes = predictions.count('SMALL')
+    last = history_numbers[0]
+    prev = history_numbers[1]
     
-    if big_votes > small_votes:
-        final = 'BIG'
+    # REPEAT RULE
+    if last == prev:
+        result = 11 - last
+        if result > 9:
+            result = result - 10
+        rule = "REPEAT RULE"
     else:
-        final = 'SMALL'
-    
-    confidence = int((max(big_votes, small_votes) / len(predictions)) * 100)
-    
-    if final == 'BIG':
-        num = random.randint(5, 9)
-    else:
-        num = random.randint(0, 4)
+        # NORMAL RULE
+        result = last - 1
+        if result < 0:
+            result = 9
+        rule = "NORMAL RULE"
     
     return {
-        'prediction': final,
-        'number': num,
-        'confidence': confidence,
-        'big_votes': big_votes,
-        'small_votes': small_votes,
-        'total_votes': len(predictions)
+        "prediction": "BIG" if result >= 5 else "SMALL",
+        "number": result,
+        "rule": rule,
+        "last": last,
+        "prev": prev
     }
 
 # ==================== API ====================
 def fetch_api_data():
     try:
         url = API_URL + "?t=" + str(int(time.time() * 1000))
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'application/json'
-        }
-        res = requests.get(url, headers=headers, timeout=10)
+        res = requests.get(url, timeout=10)
         if res.status_code == 200:
             data = res.json()
             return data.get("data", {}).get("list", [])
@@ -449,19 +140,17 @@ async def send_message(text):
 async def send_hourly_report():
     global hourly_wins, hourly_losses, hourly_rounds
     global hourly_best_win_streak, hourly_worst_loss_streak
-    global hourly_current_streak, hourly_current_streak_type, hourly_jackpots
     global total_wins, total_losses, total_rounds, total_jackpots
     global best_win_streak, worst_loss_streak
-    global last_hour_report_time
-
+    
     if hourly_rounds == 0:
         return
-
+    
     hourly_win_rate = (hourly_wins / hourly_rounds * 100) if hourly_rounds > 0 else 0
     total_win_rate = (total_wins / total_rounds * 100) if total_rounds > 0 else 0
-
+    
     report_msg = (
-        f"📊 *HOURLY REPORT - 44 HACKS (1M)*\n"
+        f"📊 *HOURLY REPORT - SHIKAARI BOSS (5M)*\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"🕐 *TIME:* {datetime.now().strftime('%I:%M %p')}\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -480,53 +169,49 @@ async def send_hourly_report():
         f"🔥 *BEST WIN STREAK:* `{best_win_streak}x`\n"
         f"📉 *WORST LOSS STREAK:* `{worst_loss_streak}x`\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"⚡ 44 HACKS MEGA FUSION"
+        f"⚡ SHIKAARI BOSS BOT"
     )
-
+    
     await send_message(report_msg)
-
+    
     hourly_wins = 0
     hourly_losses = 0
     hourly_rounds = 0
     hourly_best_win_streak = 0
     hourly_worst_loss_streak = 0
-    hourly_current_streak = 0
-    hourly_current_streak_type = "WIN"
-    hourly_jackpots = 0
-    last_hour_report_time = time.time()
 
 # ==================== মেইন লুপ ====================
 async def prediction_bot():
     global total_wins, total_losses, total_jackpots, total_rounds
     global hourly_wins, hourly_losses, hourly_rounds
     global hourly_best_win_streak, hourly_worst_loss_streak
-    global hourly_current_streak, hourly_current_streak_type, hourly_jackpots
     global current_streak, best_win_streak, worst_loss_streak
     global last_predicted_period, last_predicted_signal, last_predicted_num
     global prediction_sent_for_period, last_result_sent
-    global last_hour_report_time
 
-    print("🔥 44 HACKS MEGA FUSION BOT STARTED...")
-    print(f"📡 Total Hacks: {len(HACKS)}")
-    print("🗳️ MAJORITY VOTE SYSTEM")
-    print("📊 HOURLY REPORT: ENABLED")
-    print("📡 MODE: 1 MIN WINGO")
+    print("🔥 SHIKAARI BOSS BOT STARTED...")
+    print("🧠 Algorithm: Last-1 + 11-Last")
+    print("📡 MODE: 5 MIN WINGO")
 
     await send_message(
-        "🔥 *WINGO 1M MEGA FUSION* 🔥\n"
+        "🔥 *SHIKAARI BOSS BOT* 🔥\n"
         "━━━━━━━━━━━━━━━━━━━━\n"
-        f"📡 *TOTAL HACKS:* `{len(HACKS)}`\n"
-        "🗳️ *MAJORITY VOTE SYSTEM*\n"
-        "📊 *HOURLY REPORT:* ENABLED\n"
-        "📡 *MODE:* 1 MIN WINGO\n"
+        "🧠 *ALGORITHM:* SHIKAARI BOSS\n"
+        "📌 *NORMAL:* Last − 1\n"
+        "📌 *REPEAT:* 11 − Last\n"
+        "📡 *MODE:* 5 MIN WINGO\n"
         "━━━━━━━━━━━━━━━━━━━━\n"
         "⏳ WAITING FOR FIRST SIGNAL..."
     )
 
+    last_hour_time = time.time()
+
     while True:
         try:
-            current_sec = int(time.time()) % 60
-            sleep_time = 60 - current_sec + 3
+            # ✅ 5 MIN = 300 সেকেন্ড অপেক্ষা
+            current_sec = int(time.time()) % 300
+            sleep_time = 300 - current_sec + 5
+            print(f"⏳ অপেক্ষা {sleep_time} সেকেন্ড...")
             await asyncio.sleep(sleep_time)
 
             raw_list = fetch_api_data()
@@ -534,14 +219,20 @@ async def prediction_bot():
                 print("⚠️ API ডেটা নেই")
                 continue
 
-            history_sides = []
+            history_data = []
+            history_numbers = []
             for h in raw_list[:20]:
                 num = int(h['number'])
-                history_sides.append("BIG" if num >= 5 else "SMALL")
+                history_data.append({
+                    'issueNumber': str(h['issueNumber']),
+                    'number': num,
+                    'side': "BIG" if num >= 5 else "SMALL"
+                })
+                history_numbers.append(num)
 
-            latest = raw_list[0]
-            latest_issue = str(latest['issueNumber'])
-            actual_num = int(latest['number'])
+            latest = history_data[0]
+            latest_issue = latest['issueNumber']
+            actual_num = latest['number']
             actual_type = "BIG" if actual_num >= 5 else "SMALL"
 
             print(f"📡 PERIOD: {latest_issue}, NUMBER: {actual_num}")
@@ -550,62 +241,48 @@ async def prediction_bot():
             if last_predicted_period == latest_issue and last_predicted_signal is not None and not last_result_sent:
                 is_win = (last_predicted_signal == actual_type)
                 is_jackpot = (last_predicted_num == actual_num)
-
+                
                 if is_jackpot:
                     total_jackpots += 1
                     total_wins += 1
                     hourly_wins += 1
-                    hourly_jackpots += 1
                     status = "💎 JACKPOT"
-                    is_win = True
+                    if current_streak >= 0:
+                        current_streak += 1
+                    else:
+                        current_streak = 1
                 elif is_win:
                     total_wins += 1
                     hourly_wins += 1
                     status = "✅ WIN"
-                else:
-                    total_losses += 1
-                    hourly_losses += 1
-                    status = "❌ LOSS"
-
-                if is_win:
                     if current_streak >= 0:
                         current_streak += 1
                     else:
                         current_streak = 1
                 else:
+                    total_losses += 1
+                    hourly_losses += 1
+                    status = "❌ LOSS"
                     if current_streak <= 0:
                         current_streak -= 1
                     else:
                         current_streak = -1
-
+                
                 if current_streak > best_win_streak:
                     best_win_streak = current_streak
+                if current_streak > hourly_best_win_streak:
+                    hourly_best_win_streak = current_streak
                 if abs(current_streak) > worst_loss_streak and current_streak < 0:
                     worst_loss_streak = abs(current_streak)
-
-                if is_win:
-                    if hourly_current_streak_type == "WIN":
-                        hourly_current_streak += 1
-                    else:
-                        hourly_current_streak = 1
-                        hourly_current_streak_type = "WIN"
-                    if hourly_current_streak > hourly_best_win_streak:
-                        hourly_best_win_streak = hourly_current_streak
-                else:
-                    if hourly_current_streak_type == "LOSS":
-                        hourly_current_streak += 1
-                    else:
-                        hourly_current_streak = 1
-                        hourly_current_streak_type = "LOSS"
-                    if hourly_current_streak > hourly_worst_loss_streak:
-                        hourly_worst_loss_streak = hourly_current_streak
-
+                if abs(current_streak) > hourly_worst_loss_streak and current_streak < 0:
+                    hourly_worst_loss_streak = abs(current_streak)
+                
                 total_rounds += 1
                 hourly_rounds += 1
-
+                
                 total_win_rate = (total_wins / total_rounds * 100) if total_rounds > 0 else 0
                 streak_emoji = "🔥" if current_streak > 0 else "📉" if current_streak < 0 else "⏸️"
-
+                
                 result_msg = (
                     f"🎯 *RESULT UPDATE*\n"
                     f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -618,61 +295,60 @@ async def prediction_bot():
                     f"💎 JACKPOTS: `{total_jackpots}`\n"
                     f"{streak_emoji} STREAK: `{current_streak:+d}`\n"
                     f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"⚡ 44 HACKS MEGA FUSION"
+                    f"⚡ SHIKAARI BOSS BOT"
                 )
-
+                
                 await send_message(result_msg)
-                print(f"📊 Result: {status}")
-
                 last_result_sent = True
+                print(f"📊 Result sent: {status}")
+                
                 last_predicted_period = None
                 last_predicted_signal = None
                 last_predicted_num = None
-
-                if time.time() - last_hour_report_time >= 3600:
+                
+                if time.time() - last_hour_time >= 3600:
                     await send_hourly_report()
+                    last_hour_time = time.time()
 
             # ==================== NEW PREDICTION ====================
             next_period = str(int(latest_issue) + 1)
-
+            
             if not prediction_sent_for_period.get(next_period, False):
-                pred = mega_fusion_engine(history_sides, actual_num)
-
-                streak_emoji = "🔥" if current_streak > 0 else "📉" if current_streak < 0 else "⏸️"
-                vote_summary = f"BIG: `{pred['big_votes']}` | SMALL: `{pred['small_votes']}`"
-
-                prediction_msg = (
-                    f"🔥 *44 HACKS MEGA FUSION* 🔥\n"
-                    f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"🆔 PERIOD: `#{next_period[-5:]}`\n"
-                    f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"🎯 PREDICTION: `{pred['prediction']}`\n"
-                    f"🔢 TARGET NUMBER: `{pred['number']}`\n"
-                    f"⚡ CONFIDENCE: `{pred['confidence']}%`\n"
-                    f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"🗳️ *MAJORITY VOTE:*\n"
-                    f"{vote_summary}\n"
-                    f"📊 Total Votes: `{pred['total_votes']}`\n"
-                    f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"{streak_emoji} STREAK: `{current_streak:+d}`\n"
-                    f"📈 WIN RATE: `{(total_wins/total_rounds*100) if total_rounds > 0 else 0:.1f}%`\n"
-                    f"━━━━━━━━━━━━━━━━━━━━\n"
-                    f"⏳ RESULT AWAITING...\n"
-                    f"⚡ 44 HACKS MEGA FUSION"
-                )
-
-                last_predicted_period = next_period
-                last_predicted_signal = pred['prediction']
-                last_predicted_num = pred['number']
-                prediction_sent_for_period[next_period] = True
-                last_result_sent = False
-
-                await send_message(prediction_msg)
-                print(f"✅ Prediction: {next_period} → {pred['prediction']} ({pred['number']}) [{pred['big_votes']}B-{pred['small_votes']}S]")
-
-                if len(prediction_sent_for_period) > 10:
-                    oldest = min(prediction_sent_for_period.keys())
-                    del prediction_sent_for_period[oldest]
+                pred = shikaari_boss_algorithm(history_numbers)
+                
+                if pred:
+                    streak_emoji = "🔥" if current_streak > 0 else "📉" if current_streak < 0 else "⏸️"
+                    
+                    prediction_msg = (
+                        f"🔥 *SHIKAARI BOSS PREDICTION* 🔥\n"
+                        f"━━━━━━━━━━━━━━━━━━━━\n"
+                        f"🆔 PERIOD: `#{next_period[-5:]}`\n"
+                        f"━━━━━━━━━━━━━━━━━━━━\n"
+                        f"🎯 PREDICTION: `{pred['prediction']}`\n"
+                        f"🔢 TARGET NUMBER: `{pred['number']}`\n"
+                        f"📌 RULE: `{pred['rule']}`\n"
+                        f"━━━━━━━━━━━━━━━━━━━━\n"
+                        f"📊 LAST: `{pred['last']}` | PREV: `{pred['prev']}`\n"
+                        f"━━━━━━━━━━━━━━━━━━━━\n"
+                        f"{streak_emoji} STREAK: `{current_streak:+d}`\n"
+                        f"📈 WIN RATE: `{(total_wins/total_rounds*100) if total_rounds > 0 else 0:.1f}%`\n"
+                        f"━━━━━━━━━━━━━━━━━━━━\n"
+                        f"⏳ RESULT AWAITING...\n"
+                        f"⚡ SHIKAARI BOSS BOT"
+                    )
+                    
+                    last_predicted_period = next_period
+                    last_predicted_signal = pred['prediction']
+                    last_predicted_num = pred['number']
+                    prediction_sent_for_period[next_period] = True
+                    last_result_sent = False
+                    
+                    await send_message(prediction_msg)
+                    print(f"✅ Prediction: {next_period} → {pred['prediction']} ({pred['number']}) [{pred['rule']}]")
+                    
+                    if len(prediction_sent_for_period) > 10:
+                        oldest = min(prediction_sent_for_period.keys())
+                        del prediction_sent_for_period[oldest]
 
         except Exception as e:
             print(f"❌ Loop Error: {e}")
@@ -680,12 +356,11 @@ async def prediction_bot():
 
 # ==================== স্টার্ট ====================
 if __name__ == '__main__':
-    print("🔥 44 HACKS MEGA FUSION BOT")
+    print("🔥 SHIKAARI BOSS BOT")
     print("━━━━━━━━━━━━━━━━━━━━")
-    print(f"📡 TOTAL HACKS: {len(HACKS)}")
-    print("🗳️ MAJORITY VOTE SYSTEM")
-    print("📊 HOURLY REPORT: ENABLED")
-    print("📡 MODE: 1 MIN WINGO")
+    print("🧠 NORMAL: Last - 1")
+    print("🧠 REPEAT: 11 - Last")
+    print("📡 MODE: 5 MIN WINGO")
     print("━━━━━━━━━━━━━━━━━━━━")
     
     try:
