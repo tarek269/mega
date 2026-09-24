@@ -3,10 +3,7 @@
 
 """
 🔥 WINGO 1M MEGA FUSION - 44 HACKS MAJORITY VOTE BOT
-🎯 44 Different Hack Algorithms
-🗳️ Majority Vote → Prediction
-📊 Hourly Report
-📡 MODE: 1 MIN WINGO
+🧠 Free Render Compatible
 """
 
 import asyncio
@@ -21,7 +18,7 @@ import threading
 try:
     from telegram import Bot
 except ImportError:
-    print("❌ python-telegram-bot not installed! Run: pip install python-telegram-bot")
+    print("❌ python-telegram-bot not installed!")
     exit(1)
 
 # ==================== কনফিগ ====================
@@ -29,30 +26,30 @@ BOT_TOKEN = "8386058038:AAEwayH-C4AUr7L_tx6Ecz__xpIXnrekJw0"
 CHAT_ID = "5012028880"
 API_URL = "https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json"
 
-# ==================== ওয়েব সার্ভার ====================
+# ==================== ওয়েব সার্ভার (Render Free এর জন্য) ====================
 class DummyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
+        self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write(b"44 HACKS MEGA FUSION BOT is running!")
+    
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+    
+    def log_message(self, format, *args):
+        pass  # Render logs এ spam হবে না
 
 def run_dummy_server():
     port = int(os.environ.get("PORT", 8080))
     server = HTTPServer(('0.0.0.0', port), DummyServer)
+    print(f"🌐 Web Server started on port {port}")
     server.serve_forever()
 
-threading.Thread(target=run_dummy_server, daemon=True).start()
-
-def keep_alive():
-    while True:
-        try:
-            time.sleep(600)
-            port = int(os.environ.get("PORT", 8080))
-            requests.get(f"http://localhost:{port}/", timeout=5)
-        except:
-            pass
-
-threading.Thread(target=keep_alive, daemon=True).start()
+# ✅ Web Server কে Thread এ চালান (Render Free এর জন্য)
+server_thread = threading.Thread(target=run_dummy_server, daemon=True)
+server_thread.start()
 
 # ==================== বট ====================
 bot = Bot(token=BOT_TOKEN)
@@ -86,13 +83,11 @@ last_hour_report_time = time.time()
 # 🎯 44 HACK ALGORITHMS
 # ============================================================
 
-# 1. Kohli Mods
 def h_kohli(h):
     if len(h) < 3: return 'BIG'
     if h[0] == h[1]: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return h[0]
 
-# 2. Hack Ka Boss
 def h_hackboss(h):
     if len(h) < 10: return 'BIG'
     big = h[:10].count('BIG')
@@ -100,7 +95,6 @@ def h_hackboss(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 5 else 'SMALL'
 
-# 3. Shikaari Boss
 def h_shikaari(h, last_num):
     if last_num is None: return 'BIG'
     if len(h) >= 2 and h[0] == h[1]:
@@ -110,7 +104,6 @@ def h_shikaari(h, last_num):
     if r < 0: r = 9
     return 'BIG' if r >= 5 else 'SMALL'
 
-# 4. Infinity AI
 def h_infinity(h):
     if len(h) < 5: return 'BIG'
     big = h[:5].count('BIG')
@@ -121,7 +114,6 @@ def h_infinity(h):
     if streak >= 4: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return 'BIG' if big >= 3 else 'SMALL'
 
-# 5. Priyanshu
 def h_priyanshu(h):
     if len(h) < 4: return 'BIG'
     l4 = h[:4]
@@ -134,7 +126,6 @@ def h_priyanshu(h):
     if l4[0] == l4[1] and l4[2] == l4[3]: return 'SMALL' if l4[0] == 'BIG' else 'BIG'
     return 'BIG' if l4.count('BIG') >= 2 else 'SMALL'
 
-# 6. Sanju Bhai
 def h_sanju(h):
     if len(h) < 10: return 'BIG'
     big = h[:10].count('BIG')
@@ -142,7 +133,6 @@ def h_sanju(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 5 else 'SMALL'
 
-# 7. Madmax X
 def h_madmax(h):
     if len(h) < 5: return 'BIG'
     big = h[:5].count('BIG')
@@ -153,7 +143,6 @@ def h_madmax(h):
     if streak >= 3: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return 'BIG' if big >= 3 else 'SMALL'
 
-# 8. Cyber Pro
 def h_cyber(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
@@ -161,12 +150,10 @@ def h_cyber(h):
     if big <= 1: return 'BIG'
     return h[0]
 
-# 9. Ansh Bhai
 def h_ansh(h):
     if len(h) < 5: return 'BIG'
     return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# 10. Ansh 2Level
 def h_ansh2(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
@@ -174,7 +161,6 @@ def h_ansh2(h):
     if big <= 1: return 'BIG'
     return h[0]
 
-# 11. Ansh Beast
 def h_beast(h):
     if len(h) < 6: return 'BIG'
     score = 0
@@ -187,12 +173,10 @@ def h_beast(h):
     if streak >= 4: score = -score
     return 'BIG' if score >= 0 else 'SMALL'
 
-# 12. Panda
 def h_panda(h):
     if len(h) < 5: return 'BIG'
     return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# 13. Flexi V8
 def h_flexi(h):
     if len(h) < 8: return 'BIG'
     big = h[:8].count('BIG')
@@ -200,12 +184,10 @@ def h_flexi(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 4 else 'SMALL'
 
-# 14. Rexaa Ultra
 def h_rexaa(h):
     if len(h) < 5: return 'BIG'
     return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# 15. Yadav Novix
 def h_yadav(h):
     if len(h) < 6: return 'BIG'
     big = h[:6].count('BIG')
@@ -216,7 +198,6 @@ def h_yadav(h):
     if streak >= 3: return 'SMALL' if h[0] == 'BIG' else 'BIG'
     return 'BIG' if big >= 3 else 'SMALL'
 
-# 16. Fun By Real
 def h_funreal(h):
     if len(h) < 4: return 'BIG'
     big = h[:4].count('BIG')
@@ -224,12 +205,10 @@ def h_funreal(h):
     if big <= 1: return 'BIG'
     return h[0]
 
-# 17. FreeWorking
 def h_freeworking(h):
     if len(h) < 6: return 'BIG'
     return 'BIG' if h[:6].count('BIG') >= 3 else 'SMALL'
 
-# 18. Baby Pattern
 def h_baby(h):
     if len(h) < 10: return 'BIG'
     big = h[:10].count('BIG')
@@ -237,7 +216,6 @@ def h_baby(h):
     if big <= 2: return 'BIG'
     return 'BIG' if big > 5 else 'SMALL'
 
-# 19-43. Various 8-Logic, 30+ Engine, etc.
 def h_8logic_1(h):
     if len(h) < 3: return 'BIG'
     return 'SMALL' if h[0] == h[1] and h[0] == 'BIG' else ('BIG' if h[0] == h[1] else h[0])
@@ -360,7 +338,6 @@ def h_30s_neural(h):
     if len(h) < 5: return 'BIG'
     return 'BIG' if h[:5].count('BIG') >= 3 else 'SMALL'
 
-# All 44 Hacks List
 HACKS = [
     ("Kohli Mods", lambda h, n: h_kohli(h)),
     ("Hack Ka Boss", lambda h, n: h_hackboss(h)),
@@ -412,9 +389,6 @@ HACKS = [
 # 🗳️ 44 HACKS MAJORITY VOTE
 # ============================================================
 def mega_fusion_engine(history_sides, last_num):
-    """
-    44 HACKS থেকে ভোট নিয়ে Majority Vote
-    """
     predictions = []
     for name, fn in HACKS:
         try:
@@ -433,7 +407,6 @@ def mega_fusion_engine(history_sides, last_num):
     
     confidence = int((max(big_votes, small_votes) / len(predictions)) * 100)
     
-    # Number prediction
     if final == 'BIG':
         num = random.randint(5, 9)
     else:
@@ -445,15 +418,18 @@ def mega_fusion_engine(history_sides, last_num):
         'confidence': confidence,
         'big_votes': big_votes,
         'small_votes': small_votes,
-        'total_votes': len(predictions),
-        'predictions': predictions
+        'total_votes': len(predictions)
     }
 
 # ==================== API ====================
 def fetch_api_data():
     try:
         url = API_URL + "?t=" + str(int(time.time() * 1000))
-        res = requests.get(url, timeout=10)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json'
+        }
+        res = requests.get(url, headers=headers, timeout=10)
         if res.status_code == 200:
             data = res.json()
             return data.get("data", {}).get("list", [])
@@ -592,7 +568,6 @@ async def prediction_bot():
                     hourly_losses += 1
                     status = "❌ LOSS"
 
-                # Streak
                 if is_win:
                     if current_streak >= 0:
                         current_streak += 1
@@ -665,8 +640,6 @@ async def prediction_bot():
                 pred = mega_fusion_engine(history_sides, actual_num)
 
                 streak_emoji = "🔥" if current_streak > 0 else "📉" if current_streak < 0 else "⏸️"
-
-                # Vote Summary
                 vote_summary = f"🟢 BIG: `{pred['big_votes']}` | 🔴 SMALL: `{pred['small_votes']}`"
 
                 prediction_msg = (
@@ -715,8 +688,7 @@ if __name__ == '__main__':
     print("📊 HOURLY REPORT: ENABLED")
     print("📡 MODE: 1 MIN WINGO")
     print("━━━━━━━━━━━━━━━━━━━━")
-    print(f"🤖 BOT: @rakiiibahmed")
-
+    
     try:
         asyncio.run(prediction_bot())
     except KeyboardInterrupt:
